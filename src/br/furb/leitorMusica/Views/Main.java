@@ -109,13 +109,12 @@ public class Main {
             }
         }
 
-        /*String fileName = file.getName();
-        String[] fileNameSplit = fileName.split(".");
-        String extension = fileNameSplit[fileNameSplit.length - 1];
-        if (!extension.equals("mp3")) {
+        String fileName = file.getName();
+
+        if (!fileName.substring(fileName.lastIndexOf(".") + 1).equals("mp3")) {
             showError("O arquivo não está no formato MP3");
             return;
-        }*/
+        }
 
         textFieldArquivo.setText(file.getAbsolutePath());
 
