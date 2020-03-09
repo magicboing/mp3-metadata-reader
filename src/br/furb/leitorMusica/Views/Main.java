@@ -108,13 +108,12 @@ public class Main {
             return;
         }
 
-        /*String fileName = file.getName();
-        String[] fileNameSplit = fileName.split(".");
-        String extension = fileNameSplit[fileNameSplit.length - 1];
-        if (!extension.equals("mp3")) {
+        String fileName = file.getName();
+
+        if (!fileName.substring(fileName.lastIndexOf(".") + 1).equals("mp3")) {
             showError("O arquivo não está no formato MP3");
             return;
-        }*/
+        }
 
         textFieldArquivo.setEnabled(false);
         textFieldArquivo.setText(file.getAbsolutePath());
@@ -135,7 +134,6 @@ public class Main {
 
     private void buttonSalvarOnClickListener() {
         try {
-            String nomeMusica = textFieldMusica.getText();
             musica.setTituloMusica(textFieldMusica.getText());
             musica.setArtista(textFieldArtista.getText());
             musica.setAlbum(textFieldAlbum.getText());
