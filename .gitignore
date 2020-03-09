@@ -25,5 +25,5 @@ hs_err_pid*
 #intellij Files 
 .idea/
 out/
-.iml
+*.iml
 *.mp3
