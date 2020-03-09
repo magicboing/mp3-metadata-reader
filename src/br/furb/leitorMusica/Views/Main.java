@@ -85,27 +85,28 @@ public class Main {
         });
     }
 
-    private void buttonAbrirOnClickListener() throws Exception {
+    private void buttonAbrirOnClickListener() {
         File file = new File("");
+        JFileChooser fileChooser = new JFileChooser();
 
-        if (textFieldArquivo.getText().length() == 0) {
-            JFileChooser fileChooser = new JFileChooser();
-            FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                    "MP3", "mp3");
-            fileChooser.setFileFilter(filter);
-
-            int returnVal = fileChooser.showOpenDialog(MainForm);
-
-            if (returnVal == JFileChooser.APPROVE_OPTION) {
-                file = new File(fileChooser.getSelectedFile().getAbsolutePath());
-            }
-        } else {
-            file = new File(textFieldArquivo.getText());
+        if (textFieldArquivo.getText().length() > 0) {
+            fileChooser.setCurrentDirectory(new File(textFieldArquivo.getText()));
         }
 
-        if (!file.isFile()) {
-            showError("Não foi possível abrir o arquivo.");
-            return;
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                "MP3", "mp3");
+        fileChooser.setFileFilter(filter);
+
+        int returnVal = fileChooser.showOpenDialog(MainForm);
+
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            emptyFields();
+
+            try {
+                file = new File(fileChooser.getSelectedFile().getAbsolutePath());
+            } catch (Exception ex) {
+                showError("Não foi possível abrir o arquivo");
+            }
         }
 
         /*String fileName = file.getName();
@@ -116,43 +117,88 @@ public class Main {
             return;
         }*/
 
-        textFieldArquivo.setEnabled(false);
         textFieldArquivo.setText(file.getAbsolutePath());
 
         manipuladorMusica = new ManipuladorMusica(file);
-        musica = manipuladorMusica.lerMusica();
+
+        try {
+            musica = manipuladorMusica.lerMusica();
+        } catch (Exception ex) {
+            showError("Não foi possível ler o arquivo");
+        }
 
         if (musica != null) {
             fillMusicData(musica);
+        } else {
+            musica = new Musica();
         }
 
         setEnabledMusicFieldsState(true);
     }
 
     private void labelRemoverInformacoesOnClickListener() {
-        JOptionPane.showMessageDialog(MainForm, "Remover informações");
+        try {
+            Musica musica = new Musica("", "", "", "", "", 0, 0, manipuladorMusica.getGeneros().get(0));
+
+            if (manipuladorMusica.salvar(musica)) {
+                emptyFields();
+                JOptionPane.showMessageDialog(MainForm, "Dados salvos com sucesso", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (Exception ex) {
+            showError("Não foi possível remover os dados");
+        }
     }
 
     private void buttonSalvarOnClickListener() {
         try {
-            String nomeMusica = textFieldMusica.getText();
             musica.setTituloMusica(textFieldMusica.getText());
             musica.setArtista(textFieldArtista.getText());
             musica.setAlbum(textFieldAlbum.getText());
-            musica.setNumeroFaixa(Integer.parseInt(textFieldFaixa.getText()));
-            musica.setGenero((GeneroMusica)comboBoxGenero.getSelectedItem());
+            int faixa = textFieldFaixa.getText().length() > 0 ? Integer.parseInt(textFieldFaixa.getText()) : 0;
+            musica.setNumeroFaixa(faixa);
+            musica.setGenero(manipuladorMusica.getGeneros().get(comboBoxGenero.getSelectedIndex()));
+            musica.setAno(textFieldAno.getText());
+            musica.setComentario(textFieldComentario.getText());
+
+            if (manipuladorMusica.salvar(musica)) {
+                JOptionPane.showMessageDialog(MainForm, "Dados salvos com sucesso", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            }
         } catch (UnsupportedEncodingException e) {
             showError("Não foi possível obter o título da música");
         } catch (IllegalArgumentException iea) {
             showError(iea.getMessage());
         } catch (Exception e) {
-            showError("Não foi possível salvar a música");
+            e.printStackTrace();
         }
     }
 
     private void fillMusicData(Musica musica) {
         if (musica.getTituloMusica().getBytes()[0] > 0) {
             textFieldMusica.setText(musica.getTituloMusica());
+        }
+
+        if (musica.getArtista().getBytes()[0] > 0) {
+            textFieldArtista.setText(musica.getArtista());
+        }
+
+        if (musica.getNumeroFaixa() > 0) {
+            textFieldFaixa.setText(String.valueOf(musica.getNumeroFaixa()));
+        }
+
+        if (musica.getAlbum().getBytes().length > 0) {
+            textFieldAlbum.setText(musica.getAlbum());
+        }
+
+        if (musica.getGenero().getCodigo() >= 0) {
+            comboBoxGenero.setSelectedIndex(musica.getGenero().getCodigo());
+        }
+
+        if (musica.getAno().getBytes().length > 0) {
+            textFieldAno.setText(musica.getAno());
+        }
+
+        if (musica.getComentario().getBytes().length > 0) {
+            textFieldComentario.setText(musica.getComentario());
         }
     }
 
@@ -181,5 +227,15 @@ public class Main {
 
         buttonSalvar.setEnabled(state);
         buttonCancelar.setEnabled(state);
+    }
+
+    private void emptyFields() {
+        textFieldMusica.setText("");
+        textFieldArtista.setText("");
+        textFieldFaixa.setText("");
+        textFieldAlbum.setText("");
+        comboBoxGenero.setSelectedIndex(-1);
+        textFieldAno.setText("");
+        textFieldComentario.setText("");
     }
 }

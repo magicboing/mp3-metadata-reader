@@ -14,6 +14,7 @@ public class ManipuladorMusica {
 
     public ManipuladorMusica() {
         generos = new ArrayList<GeneroMusica>();
+        //generos.add(new GeneroMusica(-1, ""));
         generos.add(new GeneroMusica(0, "Blues"));
         generos.add(new GeneroMusica(1, "Classic Rock"));
         generos.add(new GeneroMusica(2, "Country"));
@@ -164,12 +165,15 @@ public class ManipuladorMusica {
         boolean result = false;
         try(RandomAccessFile raf = new RandomAccessFile(arquivo, "rw")){
             raf.seek(raf.length() - 128);
-            byte[] byteArray = new byte[30];
+            byte[] byteArray = new byte[3];
+
             raf.read(byteArray);
-            if(!(new String(byteArray).equals("TAG"))){
+            String tag = new String(byteArray);
+            if(!(tag.equals("TAG"))){
                 raf.seek(raf.length());
                 raf.write("TAG".getBytes());
             }
+
             raf.write(padBytes(30, musica.getTituloMusica()));
             raf.write(padBytes(30, musica.getArtista()));
             raf.write(padBytes(30, musica.getAlbum()));

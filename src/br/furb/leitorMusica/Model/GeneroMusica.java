@@ -14,7 +14,7 @@ public class GeneroMusica {
    }
 
    public void setCodigo(int codigo) {
-      if(codigo < 0){
+      if(codigo < -1){
          throw new IllegalArgumentException("Código deve ser maior que zero.");
       }
       this.codigo = codigo;
@@ -25,9 +25,6 @@ public class GeneroMusica {
    }
 
    public void setDescricao(String descricao) {
-      if(descricao.trim().length() == 0){
-         throw  new IllegalArgumentException("Descrição não pode ser vazia.");
-      }
       this.descricao = descricao;
    }
 
