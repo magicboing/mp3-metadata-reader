@@ -159,4 +159,41 @@ public class ManipuladorMusica {
 
         return musica;
     }
+
+    public boolean salvar(Musica musica) throws Exception {
+        boolean result = false;
+        try(RandomAccessFile raf = new RandomAccessFile(arquivo, "rw")){
+            raf.seek(raf.length() - 128);
+            byte[] byteArray = new byte[30];
+            raf.read(byteArray);
+            if(!(new String(byteArray).equals("TAG"))){
+                raf.seek(raf.length());
+                raf.write("TAG".getBytes());
+            }
+            raf.write(padBytes(30, musica.getTituloMusica()));
+            raf.write(padBytes(30, musica.getArtista()));
+            raf.write(padBytes(30, musica.getAlbum()));
+            raf.write(padBytes(4, musica.getAno()));
+            raf.write(padBytes(28, musica.getComentario()));
+            raf.write(0);
+            raf.write(musica.getNumeroFaixa());
+            raf.write(musica.getGenero().getCodigo());
+
+            result = true;
+        }
+        return result;
+    }
+
+    private byte[] padBytes(int tamanho, String conteudo){
+        byte[] bytes = new byte[tamanho];
+
+        for (int i = 0; i < bytes.length; i++){
+            if(i < conteudo.getBytes().length){
+                bytes[i] = conteudo.getBytes()[i];
+            }else{
+                bytes[i] = 0;
+            }
+        }
+        return bytes;
+    }
 }
