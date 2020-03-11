@@ -40,6 +40,8 @@ public class MainForm {
     private JLabel labelRemoveInfo;
     private Music music;
     private Manager manager;
+    private boolean fileOpened;
+    private String openedFile = "";
 
     public MainForm() {
         initializeListeners();
@@ -119,7 +121,7 @@ public class MainForm {
         if (textFieldFile.getText().length() > 0) {
             file = new File(textFieldFile.getText());
 
-            if (file.isDirectory()) {
+            if (file.isDirectory() || (fileOpened && openedFile.equals(textFieldFile.getText()))) {
                 fileChooser.setCurrentDirectory(new File(textFieldFile.getText()));
 
                 FileNameExtensionFilter filter = new FileNameExtensionFilter(
@@ -134,7 +136,7 @@ public class MainForm {
                     try {
                         file = new File(fileChooser.getSelectedFile().getAbsolutePath());
                     } catch (Exception ex) {
-                        showError("Não foi possível abrir o arquivo");
+                        ex.printStackTrace();
                     }
                 }
             }
@@ -162,8 +164,11 @@ public class MainForm {
                 }
             } catch (Exception ex) {
                 showError("Não foi possível ler o arquivo");
+                ex.printStackTrace();
             }
 
+            fileOpened = true;
+            openedFile = textFieldFile.getText();
             setEnabledMusicFieldsState(true);
         } else {
             showError("Arquivo não encontrado");
@@ -213,7 +218,7 @@ public class MainForm {
             }
 
             music.setTrack(faixa);
-            music.setGenre(manager.getGenres().get(comboBoxGenre.getSelectedIndex()));
+            music.setGenre(manager.getGenres().get(comboBoxGenre.getSelectedIndex() < 0 ? 0 : comboBoxGenre.getSelectedIndex()));
             music.setYear(textFieldYear.getText());
             music.setNote(textFieldNote.getText());
 
@@ -226,6 +231,7 @@ public class MainForm {
             showError(iea.getMessage());
         } catch (Exception e) {
             showError("Não foi possível salvar os dados");
+            e.printStackTrace();
         }
     }
 
@@ -237,11 +243,11 @@ public class MainForm {
     }
 
     private void fillMusicData(Music musica) {
-        if (musica.getTitle().getBytes()[0] > 0) {
+        if (validateStringData(music.getTitle())) {
             textFieldMusic.setText(musica.getTitle());
         }
 
-        if (musica.getArtist().getBytes()[0] > 0) {
+        if (validateStringData(music.getArtist())) {
             textFieldArtist.setText(musica.getArtist());
         }
 
@@ -249,7 +255,7 @@ public class MainForm {
             textFieldTrack.setText(String.valueOf(musica.getTrack()));
         }
 
-        if (musica.getAlbum().getBytes()[0] > 0) {
+        if (validateStringData(music.getAlbum())) {
             textFieldAlbum.setText(musica.getAlbum());
         }
 
@@ -257,13 +263,17 @@ public class MainForm {
             comboBoxGenre.setSelectedIndex(musica.getGenre().getId());
         }
 
-        if (musica.getYear().getBytes()[0] > 0) {
+        if (validateStringData(music.getYear())) {
             textFieldYear.setText(musica.getYear());
         }
 
-        if (musica.getNote().getBytes()[0] > 0) {
+        if (validateStringData(musica.getNote())) {
             textFieldNote.setText(musica.getNote());
         }
+    }
+
+    private boolean validateStringData(String data) {
+        return data.length() > 0 && data.getBytes()[0] > 0;
     }
 
     /**

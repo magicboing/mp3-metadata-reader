@@ -38,7 +38,7 @@ public class Music {
         if(bytes.length > 30){
             throw new IllegalArgumentException("Titulo não pode ser maior que 30 caracteres.");
         }
-        this.title = title;
+        this.title = title.trim();
     }
 
     public String getArtist() {
@@ -49,7 +49,7 @@ public class Music {
         if(artist.getBytes("UTF-8").length > 30){
             throw new IllegalArgumentException("Artista não pode ser maior que 30 caracteres.");
         }
-        this.artist = artist;
+        this.artist = artist.trim();
     }
 
     public String getAlbum() {
@@ -60,7 +60,7 @@ public class Music {
         if(album.getBytes("UTF-8").length > 30){
             throw new IllegalArgumentException("Álbum não pode ser maior que 30 caracteres.");
         }
-        this.album = album;
+        this.album = album.trim();
     }
 
     public String getYear() {
@@ -68,11 +68,7 @@ public class Music {
     }
 
     public void setYear(String year) {
-        if (Integer.parseInt(year) < 0) {
-            throw new IllegalArgumentException("O ano deve ser maior que zero");
-        }
-
-        this.year = year;
+        this.year = year.trim();
     }
 
     public String getNote() {
@@ -83,7 +79,7 @@ public class Music {
         if(note.getBytes("UTF-8").length > 28){
             throw new IllegalArgumentException("Comentário não pode ser maior que 28 caracteres.");
         }
-        this.note = note;
+        this.note = note.trim();
     }
 
     public int getTrack() {
