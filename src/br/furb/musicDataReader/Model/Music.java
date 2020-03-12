@@ -34,10 +34,10 @@ public class Music {
     }
 
     public void setTitle(String title) throws UnsupportedEncodingException {
-        byte[] bytes = title.getBytes("UTF-8");
-        if(bytes.length > 30){
+        if(title.getBytes("UTF-8").length > 30){
             throw new IllegalArgumentException("Titulo não pode ser maior que 30 caracteres.");
         }
+
         this.title = title.trim();
     }
 
@@ -49,6 +49,7 @@ public class Music {
         if(artist.getBytes("UTF-8").length > 30){
             throw new IllegalArgumentException("Artista não pode ser maior que 30 caracteres.");
         }
+
         this.artist = artist.trim();
     }
 
@@ -60,6 +61,7 @@ public class Music {
         if(album.getBytes("UTF-8").length > 30){
             throw new IllegalArgumentException("Álbum não pode ser maior que 30 caracteres.");
         }
+
         this.album = album.trim();
     }
 
@@ -79,6 +81,7 @@ public class Music {
         if(note.getBytes("UTF-8").length > 28){
             throw new IllegalArgumentException("Comentário não pode ser maior que 28 caracteres.");
         }
+
         this.note = note.trim();
     }
 

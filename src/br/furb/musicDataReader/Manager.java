@@ -19,8 +19,7 @@ public class Manager {
     private ArrayList<MusicGenre> genres;
 
     public Manager() {
-        genres = new ArrayList<MusicGenre>();
-        //generos.add(new GeneroMusica(-1, ""));
+        genres = new ArrayList<>();
         genres.add(new MusicGenre(0, "Blues"));
         genres.add(new MusicGenre(1, "Classic Rock"));
         genres.add(new MusicGenre(2, "Country"));
@@ -130,9 +129,8 @@ public class Manager {
 
             byte[] byteArray = new byte[3];
             raf.read(byteArray);
-            String tag = new String(byteArray);
 
-            if(!tag.equals("TAG")){
+            if(!new String(byteArray).equals("TAG")){
                 return null;
             }
 
@@ -162,8 +160,6 @@ public class Manager {
 
             raf.read(byteArray);
             music.setGenre(genres.get(Byte.valueOf(byteArray[0]).intValue()));
-        } catch (Exception ex) {
-            throw ex;
         }
 
         return music;
@@ -176,7 +172,7 @@ public class Manager {
      * @throws Exception
      */
     public boolean saveMusic(Music music) throws Exception {
-        boolean result = false;
+        boolean result;
 
         try(RandomAccessFile raf = new RandomAccessFile(file, "rw")){
             raf.seek(raf.length() - 128);
@@ -201,6 +197,7 @@ public class Manager {
 
             result = true;
         }
+
         return result;
     }
 
@@ -218,6 +215,7 @@ public class Manager {
                 bytes[i] = content.getBytes()[i];
             }
         }
+
         return bytes;
     }
 }

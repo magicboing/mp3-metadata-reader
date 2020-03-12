@@ -46,6 +46,12 @@ public class MainForm {
     public MainForm() {
         initializeListeners();
         initializeGeneroDropdown();
+    }
+
+    /**
+     * Exibe o JFrame
+     */
+    public void show() {
         initializeJFrame();
     }
 
@@ -55,16 +61,17 @@ public class MainForm {
     private void initializeJFrame() {
         JFrame frame = new JFrame();
         frame.setContentPane(MainForm);
-        frame.setSize(800, 300);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setTitle("Leitor de MP3 - Lucas Samuel & Matheus Boing");
         frame.setAutoRequestFocus(true);
         frame.setResizable(false);
+        frame.pack();
+        frame.setLocationRelativeTo(null);
 
         textFieldFile.setText(System.getProperty("user.dir"));
-        frame.setVisible(true);
-
         setEnabledMusicFieldsState(false);
+
+        frame.setVisible(true);
     }
 
     /**
@@ -87,23 +94,37 @@ public class MainForm {
             try {
                 buttonOpenOnClickListener();
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(MainForm, "Não foi possível abrir o arquivo.", "Ops!", JOptionPane.ERROR_MESSAGE);
+                showError("Não foi possível abrir o arquivo");
             }
         });
 
-        buttonSave.addActionListener(e -> buttonSaveOnClickListener());
+        buttonSave.addActionListener(e -> {
+            try {
+                buttonSaveOnClickListener();
+            } catch (Exception ex) {
+                showError("Não foi possível salvar o arquivo");
+            }
+        });
 
         labelRemoveInfo.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                labelRemoveInfosOnClickListener();
+                try {
+                    labelRemoveInfosOnClickListener();
+                } catch (Exception ex) {
+                    showError("Não foi possível remover as informações");
+                }
             }
         });
 
         textFieldFile.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                textFieldFileOnEnterPressListener();
+                try {
+                    textFieldFileOnEnterPressListener();
+                } catch (Exception ex) {
+                    showError("Não foi possível processar o caminho do arquivo");
+                }
             }
         });
     }
@@ -124,20 +145,13 @@ public class MainForm {
             if (file.isDirectory() || (fileOpened && openedFile.equals(textFieldFile.getText()))) {
                 fileChooser.setCurrentDirectory(new File(textFieldFile.getText()));
 
-                FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                        "MP3", "mp3");
+                FileNameExtensionFilter filter = new FileNameExtensionFilter("MP3", "mp3");
                 fileChooser.setFileFilter(filter);
 
                 int returnVal = fileChooser.showOpenDialog(MainForm);
 
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
-                    emptyFields();
-
-                    try {
-                        file = new File(fileChooser.getSelectedFile().getAbsolutePath());
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
+                    file = new File(fileChooser.getSelectedFile().getAbsolutePath());
                 }
             }
         }
@@ -146,7 +160,7 @@ public class MainForm {
 
         if(file.isFile()) {
             if (!fileName.substring(fileName.lastIndexOf(".") + 1).equals("mp3")) {
-                showError("O arquivo não está no formato MP3");
+                showError("O arquivo não contém a extensão .mp3");
                 return;
             }
 
@@ -164,7 +178,6 @@ public class MainForm {
                 }
             } catch (Exception ex) {
                 showError("Não foi possível ler o arquivo");
-                ex.printStackTrace();
             }
 
             fileOpened = true;
@@ -191,7 +204,7 @@ public class MainForm {
                         JOptionPane.showMessageDialog(MainForm, "Informações removidas com sucesso", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
                     }
                 } catch (Exception ex) {
-                    showError("Não foi possível remover os dados");
+                    showError("Não foi possível remover as informações");
                 }
             }
         }
@@ -272,6 +285,11 @@ public class MainForm {
         }
     }
 
+    /**
+     * Valida se a string é válida
+     * @param data String a ser validada
+     * @return Verdadeiro, se a string é válida
+     */
     private boolean validateStringData(String data) {
         return data.length() > 0 && data.getBytes()[0] > 0;
     }
