@@ -188,21 +188,24 @@ public class MainForm {
      * Remove os metadados do arquivo
      */
     private void buttonRemoveInfosOnClickListener() {
+        setEnabledMusicFieldsState(false);
         int option = JOptionPane.showConfirmDialog(MainForm, "Realmente deseja remover as informações?", "Confirme a remoção",JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 
         if(option == JOptionPane.OK_OPTION) {
-            setEnabledMusicFieldsState(false);
             try {
                 if (manager.deleteMusic()) {
                     emptyFields();
                     JOptionPane.showMessageDialog(MainForm, "Informações removidas com sucesso", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
-                    setEnabledMusicFieldsState(true);
+                } else {
+                    showError("Não existem informações para remover");
                 }
+
             } catch (Exception ex) {
                 showError("Não foi possível remover as informações");
-                setEnabledMusicFieldsState(true);
             }
         }
+
+        setEnabledMusicFieldsState(true);
     }
 
     /**

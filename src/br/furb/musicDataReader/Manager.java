@@ -210,7 +210,7 @@ public class Manager {
             String tag = new String(byteArray);
 
             if(!(tag.equals("TAG"))){
-                return true;
+                return false;
             }
 
             raf.setLength(raf.length() - 128);
