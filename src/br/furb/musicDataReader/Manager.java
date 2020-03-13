@@ -179,9 +179,8 @@ public class Manager {
 
             byte[] byteArray = new byte[3];
             raf.read(byteArray);
-            String tag = new String(byteArray);
 
-            if(!(tag.equals("TAG"))){
+            if(!(new String(byteArray).equals("TAG"))){
                 raf.seek(raf.length());
                 raf.write("TAG".getBytes());
             }
@@ -201,6 +200,11 @@ public class Manager {
         return result;
     }
 
+    /**
+     * Remove os bytes referentes aos metadados da música no arquivo
+     * @return Verdadeiro, se foi possível remover
+     * @throws IOException
+     */
     public boolean deleteMusic() throws IOException {
         try(RandomAccessFile raf = new RandomAccessFile(file, "rw")){
             raf.seek(raf.length() - 128);
@@ -220,7 +224,13 @@ public class Manager {
     }
 
     /**
-     * Retorna um vetor de bytes do conteúdo com tamanho fixo
+     * Retorna um vetor de bytes do conteúdo com tamanho fixo,
+     * de forma que os bytes não preenchidos fiquem zerados.
+     *
+     * O método serve para ocupar o espaço total destinado à
+     * determinadas informações, como o título da música. Dessa
+     * forma, não há erros em leituras e escritas.
+     *
      * @param length Tamanho do vetor
      * @param content Conteúdo a ser incluido no vetor
      * @return Vetor de bytes
