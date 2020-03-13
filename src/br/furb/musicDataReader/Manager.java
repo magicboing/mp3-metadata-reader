@@ -30,7 +30,7 @@ public class Manager {
         genres.add(new MusicGenre(7, "Hip-Hop"));
         genres.add(new MusicGenre(8, "Jazz"));
         genres.add(new MusicGenre(9, "Metal"));
-        genres.add(new MusicGenre(10, "New GeneroMusica Age"));
+        genres.add(new MusicGenre(10, "New Age"));
         genres.add(new MusicGenre(11, "Oldies"));
         genres.add(new MusicGenre(12, "Other"));
         genres.add(new MusicGenre(13, "Pop"));
@@ -86,7 +86,7 @@ public class Manager {
         genres.add(new MusicGenre(63, "Jungle"));
         genres.add(new MusicGenre(64, "Native American"));
         genres.add(new MusicGenre(65, "Cabaret"));
-        genres.add(new MusicGenre(66, "New GeneroMusica Wave"));
+        genres.add(new MusicGenre(66, "New Wave"));
         genres.add(new MusicGenre(67, "Psychadelic"));
         genres.add(new MusicGenre(68, "Rave"));
         genres.add(new MusicGenre(69, "Showtunes"));
@@ -124,8 +124,7 @@ public class Manager {
         Music music = new Music();
 
         try (RandomAccessFile raf = new RandomAccessFile(file, "r")){
-            long length = raf.length();
-            raf.seek(length - 128);
+            raf.seek(raf.length() - 128);
 
             byte[] byteArray = new byte[3];
             raf.read(byteArray);
