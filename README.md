@@ -22,7 +22,7 @@ O projeto foi construído utilizando a arquitetura MVC (Model - View - Controlle
 ## Como executar localmente
 
 1. Clone o repositório em sua máquina local\
-   `git clone https://github.com/magicboing/trabalho1`
+   `git clone https://github.com/magicboing/mp3-metadata-reader`
 2. Importe o projeto em seu IDE
 3. Execute o projeto através do método **main()**, da classe **Main**
 
