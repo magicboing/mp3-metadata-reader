@@ -5,6 +5,7 @@
  */
 package br.furb.musicDataReader;
 
+import br.furb.musicDataReader.Controllers.MusicController;
 import br.furb.musicDataReader.Views.MainForm;
 
 import javax.swing.*;
@@ -14,13 +15,14 @@ import javax.swing.*;
  */
 public class Main {
     public static void main(String[] args) {
+        MusicController musicController = new MusicController();
+
         try {
-            MainForm mainForm = new MainForm();
-            mainForm.show();
+            musicController.view();
         } catch (IllegalArgumentException iae) {
-            JOptionPane.showMessageDialog(null, iae.getMessage(), "Ops!", JOptionPane.ERROR_MESSAGE);
+            musicController.showError(iae.getMessage());
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "Houve um erro", "Ops!", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Não foi possível iniciar a aplicação", "Ops!", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

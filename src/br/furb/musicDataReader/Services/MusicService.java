@@ -3,10 +3,10 @@
  * Disciplina de Programação II
  * Trabalho I
  */
-package br.furb.musicDataReader;
+package br.furb.musicDataReader.Services;
 
-import br.furb.musicDataReader.Model.MusicGenre;
-import br.furb.musicDataReader.Model.Music;
+import br.furb.musicDataReader.Models.MusicGenre;
+import br.furb.musicDataReader.Models.Music;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -14,11 +14,19 @@ import java.util.ArrayList;
 /**
  * Manipulador de metadados da música
  */
-public class Manager {
+public class MusicService {
     private File file;
     private ArrayList<MusicGenre> genres;
 
-    public Manager() {
+    public MusicService() {
+        initializeGenresArrayList();
+    }
+
+    /**
+     * Inicializa o ArrayList de gêneros,
+     * adicionando todos os gêneros de músicas
+     */
+    private void initializeGenresArrayList() {
         genres = new ArrayList<>();
         genres.add(new MusicGenre(0, "Blues"));
         genres.add(new MusicGenre(1, "Classic Rock"));
@@ -100,11 +108,6 @@ public class Manager {
         genres.add(new MusicGenre(77, "Musical"));
         genres.add(new MusicGenre(78, "Rock & Roll"));
         genres.add(new MusicGenre(79, "Hard Rock"));
-    }
-
-    public Manager(File file) {
-        this();
-        setFile(file);
     }
 
     public ArrayList<MusicGenre> getGenres() {

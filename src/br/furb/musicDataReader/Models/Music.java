@@ -3,7 +3,7 @@
  * Disciplina de Programação II
  * Trabalho I
  */
-package br.furb.musicDataReader.Model;
+package br.furb.musicDataReader.Models;
 
 import java.io.UnsupportedEncodingException;
 
