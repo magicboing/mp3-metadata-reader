@@ -26,7 +26,6 @@ public class Music {
         setYear("");
         setNote("");
         setTrack(0);
-        setGenre(new MusicGenre(0, ""));
     }
 
     public String getTitle() {

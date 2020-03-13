@@ -201,6 +201,24 @@ public class Manager {
         return result;
     }
 
+    public boolean deleteMusic() throws IOException {
+        try(RandomAccessFile raf = new RandomAccessFile(file, "rw")){
+            raf.seek(raf.length() - 128);
+
+            byte[] byteArray = new byte[3];
+            raf.read(byteArray);
+            String tag = new String(byteArray);
+
+            if(!(tag.equals("TAG"))){
+                return true;
+            }
+
+            raf.setLength(raf.length() - 128);
+
+            return true;
+        }
+    }
+
     /**
      * Retorna um vetor de bytes do conteúdo com tamanho fixo
      * @param length Tamanho do vetor

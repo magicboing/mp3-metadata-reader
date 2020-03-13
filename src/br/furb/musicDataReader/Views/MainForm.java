@@ -12,8 +12,6 @@ import br.furb.musicDataReader.Model.Music;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 
@@ -37,6 +35,7 @@ public class MainForm {
     private JLabel labelGenre;
     private JLabel labelYear;
     private JLabel labelNote;
+    private JButton buttonRemoveInfos;
     private JLabel labelRemoveInfo;
     private Music music;
     private Manager manager;
@@ -106,14 +105,11 @@ public class MainForm {
             }
         });
 
-        labelRemoveInfo.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                try {
-                    labelRemoveInfosOnClickListener();
-                } catch (Exception ex) {
-                    showError("Não foi possível remover as informações");
-                }
+        buttonRemoveInfos.addActionListener(e -> {
+            try {
+                buttonRemoveInfosOnClickListener();
+            } catch (Exception ex) {
+                showError("Não foi possível remover as informações");
             }
         });
 
@@ -191,21 +187,20 @@ public class MainForm {
     /**
      * Remove os metadados do arquivo
      */
-    private void labelRemoveInfosOnClickListener() {
-        if (labelRemoveInfo.isEnabled()) {
-            int option = JOptionPane.showConfirmDialog(MainForm, "Realmente deseja remover as informações?", "Confirme a remoção",JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+    private void buttonRemoveInfosOnClickListener() {
+        int option = JOptionPane.showConfirmDialog(MainForm, "Realmente deseja remover as informações?", "Confirme a remoção",JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 
-            if(option == JOptionPane.OK_OPTION) {
-                try {
-                    Music musica = new Music();
-
-                    if (manager.saveMusic(musica)) {
-                        emptyFields();
-                        JOptionPane.showMessageDialog(MainForm, "Informações removidas com sucesso", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
-                    }
-                } catch (Exception ex) {
-                    showError("Não foi possível remover as informações");
+        if(option == JOptionPane.OK_OPTION) {
+            setEnabledMusicFieldsState(false);
+            try {
+                if (manager.deleteMusic()) {
+                    emptyFields();
+                    JOptionPane.showMessageDialog(MainForm, "Informações removidas com sucesso", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                    setEnabledMusicFieldsState(true);
                 }
+            } catch (Exception ex) {
+                showError("Não foi possível remover as informações");
+                setEnabledMusicFieldsState(true);
             }
         }
     }
@@ -215,28 +210,32 @@ public class MainForm {
      */
     private void buttonSaveOnClickListener() {
         try {
-            music.setTitle(textFieldMusic.getText());
-            music.setArtist(textFieldArtist.getText());
-            music.setAlbum(textFieldAlbum.getText());
+            if (comboBoxGenre.getSelectedIndex() > -1) {
+                music.setTitle(textFieldMusic.getText());
+                music.setArtist(textFieldArtist.getText());
+                music.setAlbum(textFieldAlbum.getText());
 
-            int faixa = 0;
+                int faixa = 0;
 
-            if (textFieldTrack.getText().length() > 0) {
-                try {
-                    faixa = Integer.parseInt(textFieldTrack.getText());
-                } catch (NumberFormatException nfe) {
-                    showError("A faixa deve ser um número inteiro");
-                    return;
+                if (textFieldTrack.getText().length() > 0) {
+                    try {
+                        faixa = Integer.parseInt(textFieldTrack.getText());
+                    } catch (NumberFormatException nfe) {
+                        showError("A faixa deve ser um número inteiro");
+                        return;
+                    }
                 }
-            }
 
-            music.setTrack(faixa);
-            music.setGenre(manager.getGenres().get(comboBoxGenre.getSelectedIndex() < 0 ? 0 : comboBoxGenre.getSelectedIndex()));
-            music.setYear(textFieldYear.getText());
-            music.setNote(textFieldNote.getText());
+                music.setTrack(faixa);
+                music.setGenre(manager.getGenres().get(comboBoxGenre.getSelectedIndex() < 0 ? 0 : comboBoxGenre.getSelectedIndex()));
+                music.setYear(textFieldYear.getText());
+                music.setNote(textFieldNote.getText());
 
-            if (manager.saveMusic(music)) {
-                JOptionPane.showMessageDialog(MainForm, "Dados salvos com sucesso", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                if (manager.saveMusic(music)) {
+                    JOptionPane.showMessageDialog(MainForm, "Dados salvos com sucesso", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                }
+            } else {
+                showError("Selecione um gênero");
             }
         } catch (UnsupportedEncodingException e) {
             showError("Não foi possível obter o título da música");
@@ -244,7 +243,6 @@ public class MainForm {
             showError(iea.getMessage());
         } catch (Exception e) {
             showError("Não foi possível salvar os dados");
-            e.printStackTrace();
         }
     }
 
@@ -272,8 +270,10 @@ public class MainForm {
             textFieldAlbum.setText(musica.getAlbum());
         }
 
-        if (musica.getGenre().getId() >= 0) {
+        if (musica.getGenre() != null && musica.getGenre().getId() >= 0) {
             comboBoxGenre.setSelectedIndex(musica.getGenre().getId());
+        } else {
+            comboBoxGenre.setSelectedIndex(-1);
         }
 
         if (validateStringData(music.getYear())) {
@@ -314,7 +314,6 @@ public class MainForm {
         labelTrack.setEnabled(state);
         labelGenre.setEnabled(state);
         labelTitle.setEnabled(state);
-        labelRemoveInfo.setEnabled(state);
 
         textFieldMusic.setEnabled(state);
         textFieldAlbum.setEnabled(state);
@@ -326,6 +325,7 @@ public class MainForm {
         comboBoxGenre.setEnabled(state);
 
         buttonSave.setEnabled(state);
+        buttonRemoveInfos.setEnabled(state);
     }
 
     /**
