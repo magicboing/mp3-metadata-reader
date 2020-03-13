@@ -43,6 +43,7 @@ public class MainForm {
     private String openedFile = "";
 
     public MainForm() {
+        manager = new Manager();
         initializeListeners();
         initializeGeneroDropdown();
     }
@@ -78,8 +79,6 @@ public class MainForm {
      * itens da lista de gêneros
      */
     private void initializeGeneroDropdown() {
-        Manager manager = new Manager();
-
         for (MusicGenre genero : manager.getGenres()) {
             comboBoxGenre.addItem(genero);
         }
@@ -161,8 +160,7 @@ public class MainForm {
             }
 
             textFieldFile.setText(file.getAbsolutePath());
-
-            manager = new Manager(file);
+            manager.setFile(file);
 
             try {
                 music = manager.readMusic();
