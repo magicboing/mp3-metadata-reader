@@ -3,10 +3,10 @@
  * Disciplina de Programação II
  * Trabalho I
  */
-package br.furb.musicDataReader;
+package br.furb.musicDataReader.Services;
 
-import br.furb.musicDataReader.Model.MusicGenre;
-import br.furb.musicDataReader.Model.Music;
+import br.furb.musicDataReader.Models.MusicGenre;
+import br.furb.musicDataReader.Models.Music;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -14,11 +14,19 @@ import java.util.ArrayList;
 /**
  * Manipulador de metadados da música
  */
-public class Manager {
+public class MusicService {
     private File file;
     private ArrayList<MusicGenre> genres;
 
-    public Manager() {
+    public MusicService() {
+        initializeGenresArrayList();
+    }
+
+    /**
+     * Inicializa o ArrayList de gêneros,
+     * adicionando todos os gêneros de músicas
+     */
+    private void initializeGenresArrayList() {
         genres = new ArrayList<>();
         genres.add(new MusicGenre(0, "Blues"));
         genres.add(new MusicGenre(1, "Classic Rock"));
@@ -30,7 +38,7 @@ public class Manager {
         genres.add(new MusicGenre(7, "Hip-Hop"));
         genres.add(new MusicGenre(8, "Jazz"));
         genres.add(new MusicGenre(9, "Metal"));
-        genres.add(new MusicGenre(10, "New GeneroMusica Age"));
+        genres.add(new MusicGenre(10, "New Age"));
         genres.add(new MusicGenre(11, "Oldies"));
         genres.add(new MusicGenre(12, "Other"));
         genres.add(new MusicGenre(13, "Pop"));
@@ -86,7 +94,7 @@ public class Manager {
         genres.add(new MusicGenre(63, "Jungle"));
         genres.add(new MusicGenre(64, "Native American"));
         genres.add(new MusicGenre(65, "Cabaret"));
-        genres.add(new MusicGenre(66, "New GeneroMusica Wave"));
+        genres.add(new MusicGenre(66, "New Wave"));
         genres.add(new MusicGenre(67, "Psychadelic"));
         genres.add(new MusicGenre(68, "Rave"));
         genres.add(new MusicGenre(69, "Showtunes"));
@@ -100,11 +108,6 @@ public class Manager {
         genres.add(new MusicGenre(77, "Musical"));
         genres.add(new MusicGenre(78, "Rock & Roll"));
         genres.add(new MusicGenre(79, "Hard Rock"));
-    }
-
-    public Manager(File file) {
-        this();
-        setFile(file);
     }
 
     public ArrayList<MusicGenre> getGenres() {
@@ -124,8 +127,7 @@ public class Manager {
         Music music = new Music();
 
         try (RandomAccessFile raf = new RandomAccessFile(file, "r")){
-            long length = raf.length();
-            raf.seek(length - 128);
+            raf.seek(raf.length() - 128);
 
             byte[] byteArray = new byte[3];
             raf.read(byteArray);
@@ -179,9 +181,8 @@ public class Manager {
 
             byte[] byteArray = new byte[3];
             raf.read(byteArray);
-            String tag = new String(byteArray);
 
-            if(!(tag.equals("TAG"))){
+            if(!(new String(byteArray).equals("TAG"))){
                 raf.seek(raf.length());
                 raf.write("TAG".getBytes());
             }
@@ -201,6 +202,11 @@ public class Manager {
         return result;
     }
 
+    /**
+     * Remove os bytes referentes aos metadados da música no arquivo
+     * @return Verdadeiro, se foi possível remover
+     * @throws IOException
+     */
     public boolean deleteMusic() throws IOException {
         try(RandomAccessFile raf = new RandomAccessFile(file, "rw")){
             raf.seek(raf.length() - 128);
@@ -220,7 +226,13 @@ public class Manager {
     }
 
     /**
-     * Retorna um vetor de bytes do conteúdo com tamanho fixo
+     * Retorna um vetor de bytes do conteúdo com tamanho fixo,
+     * de forma que os bytes não preenchidos fiquem zerados.
+     *
+     * O método serve para ocupar o espaço total destinado à
+     * determinadas informações, como o título da música. Dessa
+     * forma, não há erros em leituras e escritas.
+     *
      * @param length Tamanho do vetor
      * @param content Conteúdo a ser incluido no vetor
      * @return Vetor de bytes
